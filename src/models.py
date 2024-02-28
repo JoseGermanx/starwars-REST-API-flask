@@ -4,14 +4,11 @@ from sqlalchemy.orm import relationship
 
 db = SQLAlchemy()
 
-
 class User(db.Model):
-    __tablename__ = 'user'
-    # Here we define columns for the table user
-    # Notice that each column is also a normal Python instance attribute.
-    id = Column(Integer, primary_key=True)
-    username = Column(String(250), nullable=False)
-    password = Column(String(250), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -50,7 +47,11 @@ class Characters(db.Model):
     birth_year = Column(String(250), nullable=False)
 
     def serialize(self):
-        return {}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "birth_year": self.birth_year
+        }
 
 class Favorites(db.Model):
     __tablename__ = 'favorites'
@@ -58,11 +59,15 @@ class Favorites(db.Model):
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship("User")
     planet_id = Column(Integer, ForeignKey('planets.id'))
+    planet = relationship("Planets")
     character_id = Column(Integer, ForeignKey('characters.id'))
-    user = relationship(User, back_populates="favorites")
-    planet = relationship(Planets, back_populates="favorites")
-    character = relationship(Characters, back_populates="favorites")
+    character = relationship("Characters") 
+    
+    
+    
+
 
     def serialize(self):
         return {}
