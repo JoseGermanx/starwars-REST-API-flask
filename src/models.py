@@ -80,10 +80,11 @@ class Favorites(db.Model):
     planet = relationship("Planets")
     character_id = Column(Integer, ForeignKey('characters.id'))
     character = relationship("Characters") 
-    
-    
-    
-
 
     def serialize(self):
-        return {}
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "planet_id": self.planet_id,
+            "character_id": self.character_id
+        }
